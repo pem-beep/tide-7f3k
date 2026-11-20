@@ -528,8 +528,9 @@ h1 {
   70%, 100% { opacity: 0; transform: scale(1.7); }
 }
 
-.card.is-pressing .touch-cue, .hero.is-revealed .touch-cue,
-.card.is-pressing .tap-cue, .hero.is-revealed .tap-cue { visibility: hidden; }
+/* The hint has to stay readable while a finger is down and holding, otherwise
+   it disappears exactly when it is being read. Only the flip retires it. */
+.hero.is-revealed .touch-cue, .hero.is-revealed .tap-cue { visibility: hidden; }
 
 @keyframes swipe-cue {
   0% { opacity: 0; transform: translateX(0) rotate(-9deg) scale(.85); }

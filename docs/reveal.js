@@ -2,7 +2,7 @@ const gift = window.weddingGift;
 const byId = (id) => document.getElementById(id);
 const hero = byId("hero");
 const card = byId("card");
-const tilt = card.querySelector(".card-tilt");
+const stage = card.closest(".card-stage");
 const cardTurn = card.querySelector(".card-turn");
 const cardTrigger = byId("card-trigger");
 const hotelDetails = byId("hotel-details");
@@ -25,7 +25,7 @@ byId("voucher-title").textContent = gift.title;
 byId("voucher-subtitle").textContent = gift.subtitle;
 
 function resetLight() {
-  tilt.removeAttribute("style");
+  stage.removeAttribute("style");
   hero.style.removeProperty("--coast-x");
   hero.style.removeProperty("--coast-y");
   card.classList.remove("is-tracking", "is-pressing");
@@ -80,6 +80,10 @@ cardTrigger.addEventListener("click", (event) => {
     dragged = false;
     return;
   }
+  if (event.detail > 0 && hitsHotelInfo(event)) {
+    toggleHotelInfo();
+    return;
+  }
   toggleGift(event.detail > 0 ? pointOnCard(event) : null);
 });
 cardTrigger.disabled = false;
@@ -89,10 +93,20 @@ function setHotelInfo(open) {
   hotelPanel.hidden = !open;
 }
 
-hotelInfo.addEventListener("click", () => {
+function toggleHotelInfo() {
   setHotelInfo(hotelPanel.hidden);
   resetLight();
-});
+}
+
+function hitsHotelInfo({ clientX, clientY }) {
+  if (hotelDetails.hidden) return false;
+
+  // A browser can target the flip button under the painted info button.
+  const { left, right, top, bottom } = hotelInfo.getBoundingClientRect();
+  return clientX >= left && clientX <= right && clientY >= top && clientY <= bottom;
+}
+
+hotelInfo.addEventListener("click", toggleHotelInfo);
 hotelDetails.addEventListener("keydown", (event) => {
   if (event.key !== "Escape" || hotelPanel.hidden) return;
   event.preventDefault();
@@ -111,12 +125,12 @@ function trackLight(event, allowTilt) {
   const { x, y } = pointOnCard(event);
 
   card.classList.add("is-tracking");
-  tilt.style.setProperty("--tilt-x", `${allowTilt ? (0.5 - y) * 22 : 0}deg`);
-  tilt.style.setProperty("--tilt-y", `${allowTilt ? (x - 0.5) * 30 : 0}deg`);
-  tilt.style.setProperty("--light-x", `${x * 100}%`);
-  tilt.style.setProperty("--light-y", `${y * 100}%`);
-  tilt.style.setProperty("--foil-x", `${100 - x * 100}%`);
-  tilt.style.setProperty("--foil-y", `${100 - y * 100}%`);
+  stage.style.setProperty("--tilt-x", `${allowTilt ? (0.5 - y) * 22 : 0}deg`);
+  stage.style.setProperty("--tilt-y", `${allowTilt ? (x - 0.5) * 30 : 0}deg`);
+  stage.style.setProperty("--light-x", `${x * 100}%`);
+  stage.style.setProperty("--light-y", `${y * 100}%`);
+  stage.style.setProperty("--foil-x", `${100 - x * 100}%`);
+  stage.style.setProperty("--foil-y", `${100 - y * 100}%`);
 
   if (revealed) {
     hero.style.setProperty("--coast-x", `${(0.5 - x) * 12}px`);
@@ -127,14 +141,14 @@ function trackLight(event, allowTilt) {
 cardTrigger.addEventListener("pointerdown", (event) => {
   if (!event.isPrimary || !hotelPanel.hidden) return;
   dragged = false;
-  if (event.pointerType === "mouse") return;
+  if (event.pointerType === "mouse" || hitsHotelInfo(event)) return;
   touch = { id: event.pointerId, x: event.clientX, y: event.clientY };
   card.classList.add("is-pressing");
   if (!reducedMotion.matches) trackLight(event, false);
 });
 
-card.addEventListener("pointermove", (event) => {
-  if (!event.isPrimary || !hotelPanel.hidden || event.target.closest(".card-info")) return;
+stage.addEventListener("pointermove", (event) => {
+  if (!event.isPrimary || !hotelPanel.hidden || hitsHotelInfo(event)) return;
   if (touch?.id === event.pointerId) {
     dragged ||= Math.hypot(event.clientX - touch.x, event.clientY - touch.y) > 9;
   } else if (event.pointerType !== "mouse") {
@@ -151,7 +165,7 @@ function endTouch(event) {
 
 card.addEventListener("pointerup", endTouch);
 card.addEventListener("pointercancel", endTouch);
-card.addEventListener("pointerleave", (event) => {
+stage.addEventListener("pointerleave", (event) => {
   if (event.pointerType === "mouse") resetLight();
 });
 reducedMotion.addEventListener("change", () => {

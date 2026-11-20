@@ -223,10 +223,12 @@ h1 {
   transform: rotate(-3deg) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
   transition: transform .5s cubic-bezier(.2,.75,.25,1);
 }
-.hero.is-revealed .card .card-tilt {
-  transform: rotate(0deg) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+.hero.is-revealed .card .card-tilt, .hotel-details {
+  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
 }
-.card.is-tracking .card-tilt { transition-duration: .16s; }
+.card.is-tracking .card-tilt, .card.is-tracking + .hotel-details {
+  transition-duration: .16s;
+}
 .card-turn { transform: rotateY(0deg); transition: transform 1.05s cubic-bezier(.25,.1,.2,1); }
 .hero.is-revealed .card .card-turn {
   transform: rotateY(180deg);
@@ -488,11 +490,12 @@ h1 {
 .caption { display: grid; justify-items: center; align-content: start; gap: 10px; max-width: 440px; }
 .message { max-width: 38ch; font-size: .94rem; color: var(--muted); text-wrap: pretty; }
 
-/* Keep controls on the tilt plane outside the rotating faces. */
+/* Keep interactive controls above the card' 3D hit-testing context. */
 .hotel-details {
   position: absolute;
   inset: 0;
-  transform: translateZ(3px);
+  z-index: 3;
+  transition: transform .5s cubic-bezier(.2,.75,.25,1);
   pointer-events: none;
 }
 .card-info, .hotel-panel {

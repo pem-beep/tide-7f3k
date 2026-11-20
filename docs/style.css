@@ -490,7 +490,7 @@ h1 {
 .caption { display: grid; justify-items: center; align-content: start; gap: 10px; max-width: 440px; }
 .message { max-width: 38ch; font-size: .94rem; color: var(--muted); text-wrap: pretty; }
 
-/* Keep interactive controls above the card' 3D hit-testing context. */
+/* Keep interactive controls above the card's 3D hit-testing context. */
 .hotel-details {
   position: absolute;
   inset: 0;
@@ -587,6 +587,17 @@ h1 {
   html { scroll-behavior: smooth; }
 }
 
+@media (min-width: 800px) and (min-height: 700px) {
+  .greeting { font-size: clamp(2.45rem, 5.2vw, 3.35rem); }
+  .card { width: min(80vw, 445px, 46vh); width: min(80vw, 445px, 46svh); }
+  .card-cover .card-kicker { font-size: .84rem; }
+  .card-voucher .card-kicker { font-size: clamp(1rem, 2.6vmin, 1.3rem); }
+  .card-voucher .card-title { font-size: clamp(1.25rem, min(5.6vw, 4.2vh), 2.4rem); }
+  .voucher-subtitle { font-size: clamp(.94rem, 1.8vh, 1.04rem); }
+  .delivery-note { font-size: clamp(.87rem, 1.55vh, .96rem); }
+  .card-info { font-size: .8rem; }
+  .message { font-size: 1.05rem; }
+}
 @media (max-width: 500px) {
   .hero { row-gap: 29px; --lift-y: -4px; --lift-z: 11px; }
   .card-stage { perspective: 1400px; }

@@ -488,10 +488,11 @@ h1 {
 .caption { display: grid; justify-items: center; align-content: start; gap: 10px; max-width: 440px; }
 .message { max-width: 38ch; font-size: .94rem; color: var(--muted); text-wrap: pretty; }
 
+/* Keep controls on the tilt plane outside the rotating faces. */
 .hotel-details {
   position: absolute;
   inset: 0;
-  z-index: 3;
+  transform: translateZ(3px);
   pointer-events: none;
 }
 .card-info, .hotel-panel {
@@ -514,11 +515,10 @@ h1 {
   color: #e8f7ff;
   font: 700 .73rem/1 var(--mono);
   cursor: pointer;
-  list-style: none;
+  text-transform: inherit;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
-.card-info::-webkit-details-marker { display: none; }
 .card-info-icon {
   display: grid;
   width: 17px;
@@ -527,11 +527,10 @@ h1 {
   border: 1px solid #a9d9f3a6;
   border-radius: 50%;
 }
-.card-info:hover, .card-info:focus-visible, .hotel-details[open] .card-info {
+.card-info:hover, .card-info:focus-visible, .card-info[aria-expanded="true"] {
   background: #1f4963;
   border-color: #d8f2ff;
 }
-.hotel-details:not([open]) .hotel-panel { display: none; }
 
 .hotel-panel {
   inset: auto 9px 9px;

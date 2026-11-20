@@ -6,7 +6,8 @@ const tilt = card.querySelector(".card-tilt");
 const cardTurn = card.querySelector(".card-turn");
 const cardTrigger = byId("card-trigger");
 const hotelDetails = byId("hotel-details");
-const hotelSummary = hotelDetails.querySelector("summary");
+const hotelInfo = byId("hotel-info");
+const hotelPanel = byId("hotel-panel");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 let revealed = false;
 let openingTurn;
@@ -49,7 +50,7 @@ function toggleGift(point) {
     if (hotelDetails.contains(document.activeElement)) {
       cardTrigger.focus({ preventScroll: true });
     }
-    hotelDetails.open = false;
+    setHotelInfo(false);
     hotelDetails.hidden = true;
     card.classList.remove("card-settled");
     card.style.removeProperty("--spark-x");
@@ -83,12 +84,20 @@ cardTrigger.addEventListener("click", (event) => {
 });
 cardTrigger.disabled = false;
 
-hotelDetails.addEventListener("toggle", resetLight);
+function setHotelInfo(open) {
+  hotelInfo.setAttribute("aria-expanded", String(open));
+  hotelPanel.hidden = !open;
+}
+
+hotelInfo.addEventListener("click", () => {
+  setHotelInfo(hotelPanel.hidden);
+  resetLight();
+});
 hotelDetails.addEventListener("keydown", (event) => {
-  if (event.key !== "Escape" || !hotelDetails.open) return;
+  if (event.key !== "Escape" || hotelPanel.hidden) return;
   event.preventDefault();
-  hotelDetails.open = false;
-  hotelSummary.focus({ preventScroll: true });
+  setHotelInfo(false);
+  hotelInfo.focus({ preventScroll: true });
 });
 
 function pointOnCard(event) {
@@ -116,7 +125,7 @@ function trackLight(event, allowTilt) {
 }
 
 cardTrigger.addEventListener("pointerdown", (event) => {
-  if (!event.isPrimary || hotelDetails.open) return;
+  if (!event.isPrimary || !hotelPanel.hidden) return;
   dragged = false;
   if (event.pointerType === "mouse") return;
   touch = { id: event.pointerId, x: event.clientX, y: event.clientY };
@@ -125,7 +134,7 @@ cardTrigger.addEventListener("pointerdown", (event) => {
 });
 
 card.addEventListener("pointermove", (event) => {
-  if (!event.isPrimary || hotelDetails.open || event.target.closest(".card-info")) return;
+  if (!event.isPrimary || !hotelPanel.hidden || event.target.closest(".card-info")) return;
   if (touch?.id === event.pointerId) {
     dragged ||= Math.hypot(event.clientX - touch.x, event.clientY - touch.y) > 9;
   } else if (event.pointerType !== "mouse") {

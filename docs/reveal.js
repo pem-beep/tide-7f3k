@@ -74,7 +74,7 @@ function toggleGift(point) {
   }, () => {});
 }
 
-card.addEventListener("click", (event) => {
+cardTrigger.addEventListener("click", (event) => {
   if (dragged && event.detail > 0) {
     dragged = false;
     return;
@@ -115,7 +115,7 @@ function trackLight(event, allowTilt) {
   }
 }
 
-card.addEventListener("pointerdown", (event) => {
+cardTrigger.addEventListener("pointerdown", (event) => {
   if (!event.isPrimary || hotelDetails.open) return;
   dragged = false;
   if (event.pointerType === "mouse") return;
@@ -125,7 +125,7 @@ card.addEventListener("pointerdown", (event) => {
 });
 
 card.addEventListener("pointermove", (event) => {
-  if (!event.isPrimary || hotelDetails.open) return;
+  if (!event.isPrimary || hotelDetails.open || event.target.closest(".card-info")) return;
   if (touch?.id === event.pointerId) {
     dragged ||= Math.hypot(event.clientX - touch.x, event.clientY - touch.y) > 9;
   } else if (event.pointerType !== "mouse") {

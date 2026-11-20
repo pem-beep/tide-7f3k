@@ -28,8 +28,8 @@
         <div class="card" id="card">
           <button class="card-trigger" id="card-trigger" type="button" aria-label="Hochzeitskarte wenden" aria-pressed="false" disabled></button>
           <div class="card-tilt">
-            <span class="card-turn" aria-hidden="true">
-              <span class="card-face card-cover">
+            <div class="card-turn">
+              <span class="card-face card-cover" aria-hidden="true">
                 <span class="card-art"></span>
                 <span class="foil"></span>
                 <span class="glare"></span>
@@ -39,15 +39,15 @@
                 <span class="touch-cue">&#x261D;&#xFE0E;</span>
                 <span class="card-kicker">Für euch zwei</span>
               </span>
-              <span class="card-face card-voucher">
+              <div class="card-face card-voucher">
                 <span class="card-art"></span>
                 <img class="card-photo" src="assets/scarlet.jpg" width="2560" height="1440" alt="">
                 <span class="foil"></span>
                 <span class="glare"></span>
                 <span class="gleam"></span>
                 <span class="touch-glow"></span>
-                <span class="card-kicker" id="voucher-kicker">Wellness für zwei</span>
-                <span class="card-copy">
+                <span class="card-kicker" id="voucher-kicker" aria-hidden="true">Wellness für zwei</span>
+                <span class="card-copy" aria-hidden="true">
                   <span class="card-title" id="voucher-title">Eine Auszeit am Meer</span>
                   <span class="voucher-subtitle" id="voucher-subtitle">Scarlet Hotel &amp; Spa · Cornwall</span>
                   <span class="delivery-note">
@@ -55,24 +55,24 @@
                     <span class="delivery-signoff">much love &lt;3</span>
                   </span>
                 </span>
-              </span>
-            </span>
+                <details class="hotel-details" id="hotel-details" hidden>
+                  <summary class="card-info">
+                    <span aria-hidden="true" class="card-info-icon">i</span>
+                    <span>Hotelinfos</span>
+                  </summary>
+                  <section class="hotel-panel" aria-labelledby="hotel-name">
+                    <h2 id="hotel-name">Scarlet Hotel &amp; Spa</h2>
+                    <address class="hotel-address">
+                      Tredragon Road<br>
+                      Mawgan Porth, Cornwall · TR8 4DQ
+                    </address>
+                    <a class="hotel-link" href="https://www.scarlethotel.co.uk/">Schaut euch das Scarlet an</a>
+                  </section>
+                </details>
+              </div>
+            </div>
           </div>
         </div>
-        <details class="hotel-details" id="hotel-details" hidden>
-          <summary class="card-info">
-            <span aria-hidden="true" class="card-info-icon">i</span>
-            <span>Hotelinfos</span>
-          </summary>
-          <section class="hotel-panel" aria-labelledby="hotel-name">
-            <h2 id="hotel-name">Scarlet Hotel &amp; Spa</h2>
-            <address class="hotel-address">
-              Tredragon Road<br>
-              Mawgan Porth, Cornwall · TR8 4DQ
-            </address>
-            <a class="hotel-link" href="https://www.scarlethotel.co.uk/">Schaut euch das Scarlet an</a>
-          </section>
-        </details>
       </div>
 
       <div class="caption">

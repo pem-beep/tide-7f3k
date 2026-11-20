@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f5f1ea">
+  <meta name="description" content="Eine kleine Überraschung für euch zur Hochzeit.">
+  <title>Alles Liebe zur Hochzeit! · Ein Hochzeitsgeschenk</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="gift.js" defer></script>
+  <script src="reveal.js" defer></script>
+</head>
+<body>
+  <main>
+    <div class="tide-caustics" aria-hidden="true"></div>
+    <section class="hero" id="hero" aria-labelledby="greeting">
+      <div class="tide" aria-hidden="true">
+        <div class="tide-foam"></div>
+        <div class="tide-water"></div>
+      </div>
+      <header class="greeting">
+        <p class="congratulations" id="congratulations" hidden></p>
+        <h1 id="greeting">Alles Liebe zur Hochzeit!</h1>
+      </header>
+
+      <div class="card-stage">
+        <div class="card" id="card">
+          <button class="card-trigger" id="card-trigger" type="button" aria-label="Hochzeitskarte wenden" aria-pressed="false" disabled></button>
+          <div class="card-tilt">
+            <span class="card-turn" aria-hidden="true">
+              <span class="card-face card-cover">
+                <span class="card-art"></span>
+                <span class="foil"></span>
+                <span class="glare"></span>
+                <span class="gleam"></span>
+                <span class="touch-glow"></span>
+                <span class="card-frame"></span>
+                <span class="touch-cue">&#x261D;&#xFE0E;</span>
+                <span class="card-kicker">Für euch zwei</span>
+              </span>
+              <span class="card-face card-voucher">
+                <span class="card-art"></span>
+                <img class="card-photo" src="assets/scarlet.jpg" width="2560" height="1440" alt="">
+                <span class="foil"></span>
+                <span class="glare"></span>
+                <span class="gleam"></span>
+                <span class="touch-glow"></span>
+                <span class="card-kicker" id="voucher-kicker">Wellness für zwei</span>
+                <span class="card-copy">
+                  <span class="card-title" id="voucher-title">Eine Auszeit am Meer</span>
+                  <span class="voucher-subtitle" id="voucher-subtitle">Scarlet Hotel &amp; Spa · Cornwall</span>
+                  <span class="delivery-note">
+                    <span id="voucher-delivery">Den Gutschein findet ihr im Mailfach.</span>
+                    <span class="delivery-signoff">much love &lt;3</span>
+                  </span>
+                </span>
+              </span>
+            </span>
+          </div>
+        </div>
+        <details class="hotel-details" id="hotel-details" hidden>
+          <summary class="card-info">
+            <span aria-hidden="true" class="card-info-icon">i</span>
+            <span>Hotelinfos</span>
+          </summary>
+          <section class="hotel-panel" aria-labelledby="hotel-name">
+            <h2 id="hotel-name">Scarlet Hotel &amp; Spa</h2>
+            <address class="hotel-address">
+              Tredragon Road<br>
+              Mawgan Porth, Cornwall · TR8 4DQ
+            </address>
+            <a class="hotel-link" href="https://www.scarlethotel.co.uk/">Schaut euch das Scarlet an</a>
+          </section>
+        </details>
+      </div>
+
+      <div class="caption">
+        <p class="message" id="message">Nach all dem Tanzen und Anstossen gibt’s jetzt ein bisschen Zeit nur für euch.</p>
+        <noscript><p>Den Gutschein findet ihr im Mailfach. much love &lt;3</p></noscript>
+      </div>
+    </section>
+
+    <p class="visually-hidden" id="announcement" role="status"></p>
+  </main>
+</body>
+</html>

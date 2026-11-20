@@ -8,9 +8,12 @@ const cardTrigger = byId("card-trigger");
 const hotelDetails = byId("hotel-details");
 const hotelInfo = byId("hotel-info");
 const hotelPanel = byId("hotel-panel");
+const announcement = byId("announcement");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+const REVEAL_FALLBACK_MS = 2800;
 let revealed = false;
 let openingTurn;
+let openingTimer;
 let touch = null;
 let dragged = false;
 
@@ -32,11 +35,12 @@ function resetLight() {
 }
 
 function finishReveal() {
+  clearTimeout(openingTimer);
   if (!hotelDetails.hidden) return;
 
   card.classList.add("card-settled");
   hotelDetails.hidden = false;
-  byId("announcement").textContent = `${gift.title}. ${byId("voucher-kicker").textContent}. ${gift.subtitle}. ${byId("voucher-delivery").textContent}`;
+  announcement.textContent = `${gift.title}. ${byId("voucher-kicker").textContent}. ${gift.subtitle}. ${byId("voucher-delivery").textContent}`;
 }
 
 function toggleGift(point) {
@@ -46,6 +50,7 @@ function toggleGift(point) {
   cardTrigger.setAttribute("aria-pressed", String(revealed));
 
   if (!revealed) {
+    clearTimeout(openingTimer);
     openingTurn = undefined;
     if (hotelDetails.contains(document.activeElement)) {
       cardTrigger.focus({ preventScroll: true });
@@ -55,7 +60,7 @@ function toggleGift(point) {
     card.classList.remove("card-settled");
     card.style.removeProperty("--spark-x");
     card.style.removeProperty("--spark-y");
-    byId("announcement").textContent = "Vorderseite der Karte.";
+    announcement.textContent = "Vorderseite der Karte.";
     return;
   }
 
@@ -70,27 +75,21 @@ function toggleGift(point) {
     finishReveal();
     return;
   }
+  // Phones can drop or freeze the turn transition (backgrounded tab, an
+  // interrupted animation), so the voucher must never stay hidden behind it.
+  openingTimer = setTimeout(() => {
+    if (revealed && openingTurn === turn) finishReveal();
+  }, REVEAL_FALLBACK_MS);
   turn.finished.then(() => {
     if (revealed && openingTurn === turn) finishReveal();
   }, () => {});
 }
 
-cardTrigger.addEventListener("click", (event) => {
-  if (dragged && event.detail > 0) {
-    dragged = false;
-    return;
-  }
-  if (event.detail > 0 && hitsHotelInfo(event)) {
-    toggleHotelInfo();
-    return;
-  }
-  toggleGift(event.detail > 0 ? pointOnCard(event) : null);
-});
-cardTrigger.disabled = false;
-
 function setHotelInfo(open) {
   hotelInfo.setAttribute("aria-expanded", String(open));
   hotelPanel.hidden = !open;
+  // Safari does not focus a button on click, so the disclosure gets focus itself.
+  if (open) hotelInfo.focus({ preventScroll: true });
 }
 
 function toggleHotelInfo() {
@@ -98,16 +97,51 @@ function toggleHotelInfo() {
   resetLight();
 }
 
-function hitsHotelInfo({ clientX, clientY }) {
-  if (hotelDetails.hidden) return false;
+const inRect = (rect, x, y) => x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+// Keyboard and assistive-tech activation arrives as a click at 0/0 without a
+// real pointer position, so those must never be position-routed.
+const withoutPoint = (event) => !event.clientX && !event.clientY;
 
-  // A browser can target the flip button under the painted info button.
-  const { left, right, top, bottom } = hotelInfo.getBoundingClientRect();
-  return clientX >= left && clientX <= right && clientY >= top && clientY <= bottom;
+function controlAt(event) {
+  if (hotelDetails.hidden || withoutPoint(event)) return null;
+
+  const { clientX: x, clientY: y } = event;
+  if (!hotelPanel.hidden && inRect(hotelPanel.getBoundingClientRect(), x, y)) return hotelPanel;
+  if (inRect(hotelInfo.getBoundingClientRect(), x, y)) return hotelInfo;
+  return null;
 }
 
+/* The hotel controls are painted on top of the full-size flip button, but a
+   phone can still hand the tap to the flip button underneath. Routing the tap
+   by position in the capture phase means the flip button never sees a tap
+   that belongs to the hotel controls, whatever the engine hit-tests. */
+window.addEventListener("click", (event) => {
+  if (event.target.closest?.("#hotel-details")) return;
+
+  const control = controlAt(event);
+  if (!control) return;
+
+  event.preventDefault();
+  event.stopPropagation();
+  if (control === hotelPanel) setHotelInfo(false);
+  else toggleHotelInfo();
+}, true);
+
+cardTrigger.addEventListener("click", (event) => {
+  if (dragged) {
+    dragged = false;
+    return;
+  }
+  if (!hotelPanel.hidden) {
+    setHotelInfo(false);
+    return;
+  }
+  toggleGift(event.detail > 0 ? pointOnCard(event) : null);
+});
+cardTrigger.disabled = false;
+
 hotelInfo.addEventListener("click", toggleHotelInfo);
-hotelDetails.addEventListener("keydown", (event) => {
+document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape" || hotelPanel.hidden) return;
   event.preventDefault();
   setHotelInfo(false);
@@ -138,17 +172,24 @@ function trackLight(event, allowTilt) {
   }
 }
 
+function overHotelControl(event) {
+  if (hotelDetails.hidden) return false;
+  const { clientX: x, clientY: y } = event;
+  return inRect(hotelInfo.getBoundingClientRect(), x, y)
+    || (!hotelPanel.hidden && inRect(hotelPanel.getBoundingClientRect(), x, y));
+}
+
 cardTrigger.addEventListener("pointerdown", (event) => {
   if (!event.isPrimary || !hotelPanel.hidden) return;
   dragged = false;
-  if (event.pointerType === "mouse" || hitsHotelInfo(event)) return;
+  if (event.pointerType === "mouse" || overHotelControl(event)) return;
   touch = { id: event.pointerId, x: event.clientX, y: event.clientY };
   card.classList.add("is-pressing");
   if (!reducedMotion.matches) trackLight(event, false);
 });
 
 stage.addEventListener("pointermove", (event) => {
-  if (!event.isPrimary || !hotelPanel.hidden || hitsHotelInfo(event)) return;
+  if (!event.isPrimary || !hotelPanel.hidden || overHotelControl(event)) return;
   if (touch?.id === event.pointerId) {
     dragged ||= Math.hypot(event.clientX - touch.x, event.clientY - touch.y) > 9;
   } else if (event.pointerType !== "mouse") {
